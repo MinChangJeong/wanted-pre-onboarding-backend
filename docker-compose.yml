@@ -1,0 +1,15 @@
+services:
+  db:
+    image: amd64/mysql
+    container_name: test-db
+    ports:
+      - "3306:3306"
+    env_file: .env
+    environment:
+      TZ: Asia/Seoul
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    platform: linux/amd64
+    volumes:
+      - ./backup:/var/lib/mysql

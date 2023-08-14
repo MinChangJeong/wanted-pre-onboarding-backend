@@ -1,7 +1,7 @@
 services:
   db:
     image: amd64/mysql
-    container_name: test-db
+    container_name: wanted-db
     ports:
       - "3306:3306"
     env_file: .env

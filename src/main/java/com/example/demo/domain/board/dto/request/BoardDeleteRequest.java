@@ -1,13 +1,13 @@
 package com.example.demo.domain.board.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class BoardDeleteRequest {
     @NotNull
     private Long memberId;

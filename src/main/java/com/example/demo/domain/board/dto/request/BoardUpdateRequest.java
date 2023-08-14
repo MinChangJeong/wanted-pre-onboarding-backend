@@ -1,14 +1,14 @@
 package com.example.demo.domain.board.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class BoardUpdateRequest {
     @NotNull
     private Long memberId;

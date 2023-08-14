@@ -1,0 +1,11 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlights
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+= Wanted API Documentation
+
+include::Member-API.adoc[]
+include::Board-API.adoc[]

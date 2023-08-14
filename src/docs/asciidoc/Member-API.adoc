@@ -1,0 +1,10 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+== Member API
+
+=== 회원 등록
+operation::register member[snippets='http-request,http-response']

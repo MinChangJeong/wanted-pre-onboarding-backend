@@ -6,5 +6,8 @@
 
 == Member API
 
+=== 로그인
+operation::login[snippets='http-request,http-response']
+
 === 회원 등록
 operation::register member[snippets='http-request,http-response']

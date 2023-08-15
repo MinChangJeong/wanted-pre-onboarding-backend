@@ -15,8 +15,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static com.example.demo.domain.auth.util.PasswordEncryptor.hashPassword;
 import static com.example.demo.domain.auth.util.PasswordEncryptor.verifyPassword;
 
@@ -31,11 +29,11 @@ public class MemberService {
     * 로그인
     * */
     public LoginResponse login(LoginRequest request) {
-        Optional<Member> member = memberRepository.findByEmail(request.getEmail());
+        Member member = memberRepository.findByEmail(request.getEmail());
 
-        if (member.isPresent()
-                && verifyPassword(member.get().getPassword(), hashPassword(request.getPassword()))) {
-            return new LoginResponse(jwtProvider.createToken(member.get()));
+        if (member != null
+                && verifyPassword(member.getPassword(), hashPassword(request.getPassword()))) {
+            return new LoginResponse(jwtProvider.createToken(member));
         }
         throw new LoginFailedException();
     }
@@ -46,7 +44,7 @@ public class MemberService {
     @Transactional
     public MemberRegisterResponse registerMember(MemberRegisterRequest request) {
         // email duplicate check
-        if(memberRepository.findByEmail(request.getEmail()).isPresent()) {
+        if(memberRepository.findByEmail(request.getEmail()) != null) {
             throw new EmailDuplicateException();
         }
         else {

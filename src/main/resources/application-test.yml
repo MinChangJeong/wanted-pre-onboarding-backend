@@ -39,3 +39,6 @@ logging:
       hibernate:
         SQL: DEBUG
         BasicBinder: TRACE
+
+jwt:
+  secret-key: jwjdkalkjdsklsakdQWEFSDA3eas23dsakfaskd

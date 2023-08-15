@@ -1,5 +1,6 @@
 package com.example.demo.domain.board.controller;
 
+import com.example.demo.domain.auth.jwt.JwtProvider;
 import com.example.demo.domain.board.dto.request.BoardRegisterRequest;
 import com.example.demo.domain.board.dto.request.BoardUpdateRequest;
 import com.example.demo.domain.board.dto.response.BoardDeleteResponse;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -36,23 +38,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("BoardController 에서")
 class BoardControllerTest extends RestDocumentTest {
     @MockBean private BoardService boardService;
+    @MockBean private JwtProvider jwtProvider;
+
+
     @Test
     @DisplayName("게시물을 성공적으로 등록하는가?")
     void successRegisterBoard() throws Exception {
         // given
         BoardRegisterRequest request
                 = new BoardRegisterRequest(
-                        1L,
                 "게시글 제목 1",
                 "게시글 내용 1");
 
-        when(boardService.registerBoard(request))
+        String token = "accessToken";
+
+        when(boardService.registerBoard(any(), any()))
                 .thenReturn(new BoardRegisterResponse());
 
         // when
         ResultActions perform =
                 mockMvc.perform(
                         post("/board")
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(toRequestBody(request))
                 );
@@ -153,18 +160,20 @@ class BoardControllerTest extends RestDocumentTest {
         // given
         BoardUpdateRequest request = new BoardUpdateRequest(
                 1L,
-                1L,
                 "게시글 제목 1",
                 "게시글 내용 1"
         );
 
-        when(boardService.updateBoard(any()))
+        String token = "accessToken";
+
+        when(boardService.updateBoard(any(), any()))
                 .thenReturn(new BoardUpdateResponse());
 
         // when
         ResultActions perform =
                 mockMvc.perform(
                         put("/board")
+                            .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                             .content(toRequestBody(request))
                             .contentType(MediaType.APPLICATION_JSON)
                 );
@@ -183,20 +192,18 @@ class BoardControllerTest extends RestDocumentTest {
     @DisplayName("게시물을 성공적으로 삭제하는가?")
     void successDeleteBoard() throws Exception {
         // given
-        BoardDeleteRequest request = new BoardDeleteRequest(
-                1L,
-                1L
-        );
-
-        when(boardService.deleteBoard(any()))
+        when(boardService.deleteBoard(any(), any()))
                 .thenReturn(new BoardDeleteResponse());
+
+        String token = "accessToken";
+
+//        Assumptions.assumeTrue(jwtProvider.validateToken(token));
 
         // when
         ResultActions perform =
                 mockMvc.perform(
-                        delete("/board")
-                            .content(toRequestBody(request))
-                            .contentType(MediaType.APPLICATION_JSON)
+                        delete("/board/{boardId}", 1L)
+                                .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                 );
 
         // then

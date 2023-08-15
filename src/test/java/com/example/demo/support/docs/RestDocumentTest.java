@@ -1,5 +1,6 @@
 package com.example.demo.support.docs;
 
+import com.example.demo.domain.auth.resolver.JwtAuthorizationArgumentResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 public class RestDocumentTest {
     @Autowired
     public ObjectMapper objectMapper;
+
     /*
     * MockMvc
     * -> 웹 어플리케이션의 웹 계층을 테스트 하기 위해 실제 HTTP 서버를 구동하지 않아도 되므로 테스트 속도를 향상시키고
@@ -47,6 +49,7 @@ public class RestDocumentTest {
     * */
     protected MockMvc mockMvc;
     @MockBean private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+    @MockBean private JwtAuthorizationArgumentResolver jwtAuthorizationArgumentResolver;
 
     protected String toRequestBody(Object value) throws JsonProcessingException {
         return objectMapper.writeValueAsString(value);
@@ -61,14 +64,14 @@ public class RestDocumentTest {
             WebApplicationContext ctx,
             RestDocumentationContextProvider restDocumentationContextProvider) {
         mockMvc =
-                MockMvcBuilders.webAppContextSetup(ctx)
+                MockMvcBuilders
+                        .webAppContextSetup(ctx)
                         .apply(
                                 documentationConfiguration(restDocumentationContextProvider)
                                         .uris()
                                         .withScheme("http")
                                         .withHost("localhost")
                                         .withPort(8080))
-//                        .addFilter(new CharacterEncodingFilter("UTF-8", true))
                         .alwaysDo(print())
                         .build();
     }

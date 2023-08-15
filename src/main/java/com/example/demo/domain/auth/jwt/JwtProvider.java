@@ -1,53 +1,77 @@
 package com.example.demo.domain.auth.jwt;
 
+import com.example.demo.domain.auth.entity.AuthenticateUser;
+import com.example.demo.domain.auth.exception.JwtAuthorizationException;
+import com.example.demo.domain.member.entity.Member;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtProvider {
-    public static final byte[] secret = "JaeYoungSecretKeyJaeYoungSecretKeyJaeYoungSecretKey".getBytes();
-    private final Key key = Keys.hmacShaKeyFor(secret);
 
-    public Jwt createJwt(Map<String, Object> claims) {
-        String accessToken = createToken(claims, getExpireDateAccessToken());
-        String refreshToken = createToken(new HashMap<>(), getExpireDateRefreshToken());
-        return Jwt.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-    }
+    @Value("${jwt.secret-key}")
+    private String secretKey;
 
-    public String createToken(Map<String, Object> claims, Date expireDate) {
+    private static final long TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
+    private static final long REFRESH_TOKEN_VALID_TIME = 30 * 24 * 60 * 60 * 1000L;
+
+    public String createToken(Member member) {
+        Claims claims = Jwts.claims();
+        claims.put("id", member.getId());
+        claims.put("email", member.getEmail());
+
+        Date now = new Date();
+
         return Jwts.builder()
+                .setHeaderParam("typ", "JWT")
                 .setClaims(claims)
-                .setExpiration(expireDate)
-                .signWith(key)
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + TOKEN_VALID_TIME))
+                .signWith(
+                        Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)),
+                        SignatureAlgorithm.HS256
+                )
                 .compact();
     }
 
-    public Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
+    public boolean validateToken(String token) {
+        try {
+            return !Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(removeBearer(token))
+                    .getBody()
+                    .getExpiration().before(new Date());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JwtAuthorizationException();
+        }
+    }
+
+    public AuthenticateUser getClaim(String token) {
+        Claims claimsBody = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .build()
-                .parseClaimsJws(token)
+                .parseClaimsJws(removeBearer(token))
                 .getBody();
+
+        return AuthenticateUser.builder()
+                .memberId(Long.valueOf((Integer) claimsBody.getOrDefault("id", 0L)))
+                .email(claimsBody.getOrDefault("email", "").toString())
+                .build();
     }
 
-
-    public Date getExpireDateAccessToken() {
-        long expireTimeMils = 1000 * 60 * 60;
-        return new Date(System.currentTimeMillis() + expireTimeMils);
-    }
-
-    public Date getExpireDateRefreshToken() {
-        long expireTimeMils = 1000L * 60 * 60 * 24 * 60;
-        return new Date(System.currentTimeMillis() + expireTimeMils);
+    private String removeBearer(String token) {
+        return token.replace("Bearer", "").trim();
     }
 }

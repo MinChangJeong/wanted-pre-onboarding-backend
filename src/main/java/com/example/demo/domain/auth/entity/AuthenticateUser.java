@@ -1,10 +1,12 @@
 package com.example.demo.domain.auth.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class AuthenticateUser {
+    private Long memberId;
     private String email;
 }

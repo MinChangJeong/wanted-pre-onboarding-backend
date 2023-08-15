@@ -5,22 +5,20 @@ import com.example.demo.domain.board.repository.BoardRepository;
 import com.example.demo.domain.member.entity.Member;
 import com.example.demo.domain.member.repository.MemberRepository;
 import com.example.demo.global.advice.exception.EntityNotFoundException;
-import com.example.demo.support.database.EnableDataBaseTest;
 import com.example.demo.support.fixture.member.MemberFixture;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
-@EnableDataBaseTest
+@DataJpaTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("BoardService 에서")
 public class BoardServiceTest {
 
@@ -30,37 +28,13 @@ public class BoardServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @BeforeEach
-    public void setup() {
-        Member member = memberRepository.save(MemberFixture.MINCHANG.toEntity());
-
-        Board board1 = Board.builder()
-                .member(member)
-                .title("게시물 제목 1")
-                .content("게시글 내용 1")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-        Board board2 = Board.builder()
-                .member(member)
-                .title("게시물 제목 2")
-                .content("게시글 내용 2")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-
-                boardRepository.saveAll(List.of(board1, board2));
-    }
-
     @Test
     @Order(1)
     @DisplayName("게시물을 성공적으로 DB에 등록하는지 테스트")
-    @Transactional
-    @Rollback(value = true)
+    @Rollback(value = false)
     void successSavedBoard() throws Exception {
         // given
-        Member member = MemberFixture.MINCHANG.toEntity();
+        Member member = memberRepository.save(MemberFixture.MINCHANG.toEntity());
 
         Board board = Board.builder()
                 .member(member)
@@ -79,9 +53,20 @@ public class BoardServiceTest {
 
     @Test
     @Order(2)
+    @DisplayName("특정 게시물을 성공적으로 조회하는지 테스트")
+    void successFindBoardDetail() throws Exception {
+        // given
+
+        // when
+        Board board = boardRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
+
+        // then
+        Assertions.assertThat(board.getId()).isEqualTo(1L);
+    }
+
+    @Test
+    @Order(3)
     @DisplayName("게시물을 성공적으로 조회하는지 테스트")
-    @Transactional
-    @Rollback(value = true)
     void successFindBoardList() throws Exception {
         // given
 
@@ -93,30 +78,31 @@ public class BoardServiceTest {
     }
 
     @Test
-    @Order(2)
-    @DisplayName("특정 게시물을 성공적으로 조회하는지 테스트")
-    @Transactional
-    @Rollback(value = true)
-    void successFindBoardDetail() throws Exception {
-        // given
-
-        // when
+    @Order(4)
+    @DisplayName("특정 게시물을 성공적으로 수정하는지 테스트")
+    @Rollback(value = false)
+    void successUpdateBoard() throws Exception {
         Board board = boardRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
 
-        // then
-        Assertions.assertThat(board.getId()).isGreaterThan(0);
+        board.setTitle("수정된 게시글 제목 1");
+
+        Board boardUpdate = boardRepository.save(board);
+
+        Assertions.assertThat(boardUpdate.getTitle()).isEqualTo("수정된 게시글 제목 1");
     }
 
     @Test
-    @Order(2)
+    @Order(5)
     @DisplayName("특정 게시물을 성공적으로 수정하는지 테스트")
-    @Transactional
-    @Rollback(value = true)
-    void successUpdateBoard() throws Exception {
-        // given
+    @Rollback(value = false)
+    public void successDeleteBoard(){
 
-        // when
+        Board board = boardRepository.findById(1L).orElseThrow(EntityNotFoundException::new);
 
-        // then
+        boardRepository.delete(board);
+
+        Optional<Board> deletedBoard = boardRepository.findById(1L);
+
+        Assertions.assertThat(deletedBoard).isEmpty();
     }
 }

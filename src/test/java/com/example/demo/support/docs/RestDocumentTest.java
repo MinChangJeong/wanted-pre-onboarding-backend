@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @WebMvcTest
 public class RestDocumentTest {
     @Autowired
-    private ObjectMapper objectMapper;
+    public ObjectMapper objectMapper;
     /*
     * MockMvc
     * -> 웹 어플리케이션의 웹 계층을 테스트 하기 위해 실제 HTTP 서버를 구동하지 않아도 되므로 테스트 속도를 향상시키고

@@ -1,6 +1,7 @@
 package com.example.demo.domain.board.controller;
 
-import com.example.demo.domain.board.dto.request.BoardDeleteRequest;
+import com.example.demo.domain.auth.entity.AuthenticateUser;
+import com.example.demo.domain.auth.jwt.JwtAuthorization;
 import com.example.demo.domain.board.dto.request.BoardRegisterRequest;
 import com.example.demo.domain.board.dto.request.BoardUpdateRequest;
 import com.example.demo.domain.board.dto.response.BoardDeleteResponse;
@@ -27,11 +28,12 @@ public class BoardController {
     BoardService boardService;
 
     /*
-     * 회원 등록
+     * 게시글 등록
      * */
     @PostMapping
-    public ResponseEntity<BoardRegisterResponse> registerBoard(@Valid @RequestBody BoardRegisterRequest request) {
-        return ResponseEntity.ok().body(boardService.registerBoard(request));
+    public ResponseEntity<BoardRegisterResponse> registerBoard(@JwtAuthorization AuthenticateUser authenticateUser,
+                                                               @Valid @RequestBody BoardRegisterRequest request) {
+        return ResponseEntity.ok().body(boardService.registerBoard(authenticateUser, request));
     }
 
     /*
@@ -56,15 +58,17 @@ public class BoardController {
     * 게시글 수정
     * */
     @PutMapping
-    public ResponseEntity<BoardUpdateResponse> updateBoard(@Valid @RequestBody BoardUpdateRequest request) {
-        return ResponseEntity.ok().body(boardService.updateBoard(request));
+    public ResponseEntity<BoardUpdateResponse> updateBoard(@JwtAuthorization AuthenticateUser authenticateUser,
+                                                           @Valid @RequestBody BoardUpdateRequest request) {
+        return ResponseEntity.ok().body(boardService.updateBoard(authenticateUser, request));
     }
 
     /*
     * 게시글 삭제
     * */
-    @DeleteMapping
-    public ResponseEntity<BoardDeleteResponse> deleteBoard(@Valid @RequestBody BoardDeleteRequest request) {
-        return ResponseEntity.ok().body(boardService.deleteBoard(request));
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<BoardDeleteResponse> deleteBoard(@JwtAuthorization AuthenticateUser authenticateUser,
+                                                           @Valid @PathVariable("boardId") Long boardId) {
+        return ResponseEntity.ok().body(boardService.deleteBoard(authenticateUser, boardId));
     }
 }

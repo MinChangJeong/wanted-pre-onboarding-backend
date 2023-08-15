@@ -1,6 +1,6 @@
 package com.example.demo.domain.board.service;
 
-import com.example.demo.domain.board.dto.request.BoardDeleteRequest;
+import com.example.demo.domain.auth.entity.AuthenticateUser;
 import com.example.demo.domain.board.dto.request.BoardRegisterRequest;
 import com.example.demo.domain.board.dto.request.BoardUpdateRequest;
 import com.example.demo.domain.board.dto.response.BoardDeleteResponse;
@@ -35,9 +35,9 @@ public class BoardService {
      *  게시글 등록
      * */
     @Transactional
-    public BoardRegisterResponse registerBoard(BoardRegisterRequest request) {
+    public BoardRegisterResponse registerBoard(AuthenticateUser authenticateUser, BoardRegisterRequest request) {
         // [1] 게시글 등록 회원 정보 조회
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findById(authenticateUser.getMemberId()).orElseThrow(EntityNotFoundException::new);
 
         // [2] 게시글 등록
         boardRepository.save(
@@ -73,9 +73,9 @@ public class BoardService {
     * 게시글 수정
     * */
     @Transactional
-    public BoardUpdateResponse updateBoard(BoardUpdateRequest request) {
+    public BoardUpdateResponse updateBoard(AuthenticateUser authenticateUser, BoardUpdateRequest request) {
         // [1] 로그인한 회원 정보와 작성자의 정보가 일치하는지 확인
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findById(authenticateUser.getMemberId()).orElseThrow(EntityNotFoundException::new);
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(EntityNotFoundException::new);
 
         if(member.equals(board.getMember())) {
@@ -94,10 +94,10 @@ public class BoardService {
     * 게시글 삭제
     */
     @Transactional
-    public BoardDeleteResponse deleteBoard(BoardDeleteRequest request) {
+    public BoardDeleteResponse deleteBoard(AuthenticateUser authenticateUser, Long boardId) {
         // [1] 로그인한 회원 정보와 작성자의 정보가 일치하는지 확인
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(EntityNotFoundException::new);
-        Board board = boardRepository.findById(request.getBoardId()).orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findById(authenticateUser.getMemberId()).orElseThrow(EntityNotFoundException::new);
+        Board board = boardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
 
         if(member.equals(board.getMember())) {
             boardRepository.delete(board);

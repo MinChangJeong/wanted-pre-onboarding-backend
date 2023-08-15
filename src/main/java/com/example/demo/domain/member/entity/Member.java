@@ -1,6 +1,5 @@
 package com.example.demo.domain.member.entity;
 
-import com.example.demo.domain.auth.dto.LoginRequest;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,13 +17,4 @@ public class Member {
     private String email;
     @Column(nullable = false)
     private String password;
-    private String refreshToken;
-
-    public void updateRefreshToken(String refreshToken){
-        this.refreshToken = refreshToken;
-    }
-
-    public boolean verifyUser(LoginRequest request){
-        return this.email.equals(request.getEmail()) && this.password.equals(request.getPassword());
-    }
 }

@@ -11,8 +11,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class BoardUpdateRequest {
     @NotNull
-    private Long memberId;
-    @NotNull
     private Long boardId;
     @NotBlank
     private String title;

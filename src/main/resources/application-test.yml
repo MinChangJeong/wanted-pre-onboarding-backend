@@ -25,6 +25,7 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
+        dialect: org.hibernate.dialect.H2Dialect
 
   mvc:
     path match:

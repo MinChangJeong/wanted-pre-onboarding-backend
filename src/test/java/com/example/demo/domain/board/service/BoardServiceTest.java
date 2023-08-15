@@ -5,11 +5,11 @@ import com.example.demo.domain.board.repository.BoardRepository;
 import com.example.demo.domain.member.entity.Member;
 import com.example.demo.domain.member.repository.MemberRepository;
 import com.example.demo.global.advice.exception.EntityNotFoundException;
+import com.example.demo.support.database.EnableDataBaseTest;
 import com.example.demo.support.fixture.member.MemberFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 
-@DataJpaTest
+
+@EnableDataBaseTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DisplayName("BoardService 에서")
 public class BoardServiceTest {

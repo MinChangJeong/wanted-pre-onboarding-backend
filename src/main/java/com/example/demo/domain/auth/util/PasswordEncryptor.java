@@ -4,8 +4,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class PasswordEncryptor {
-    private static final int SALT_LENGTH = 16; // Length of the salt in bytes
-
     public static String hashPassword(String password) {
         // Generate a random salt
         final String salt = "passwordMaker";

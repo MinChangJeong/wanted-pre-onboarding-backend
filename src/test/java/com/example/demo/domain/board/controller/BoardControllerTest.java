@@ -197,8 +197,6 @@ class BoardControllerTest extends RestDocumentTest {
 
         String token = "accessToken";
 
-//        Assumptions.assumeTrue(jwtProvider.validateToken(token));
-
         // when
         ResultActions perform =
                 mockMvc.perform(

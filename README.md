@@ -47,7 +47,7 @@ docker compose up --build -d
 
 #### 4. API 데모
 
-https://drive.google.com/drive/u/0/folders/0AIKY_zsQTW4nUk9PVA?q=parent:0AIKY_zsQTW4nUk9PVA
+https://drive.google.com/file/d/1jSJNTJ5EnNP_vTM8PeCEf0y-5QzI4x4-/view?usp=drive_link
 
 ----
 

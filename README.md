@@ -84,7 +84,7 @@ https://drive.google.com/drive/u/0/folders/0AIKY_zsQTW4nUk9PVA?q=parent:0AIKY_zs
 
 #### 6. API 명세서 with Spring REST Docs
 
-* [API 명세서](./docs/index.html)
+* [API 명세서]([https://minchangjeong.github.io/project/)
 
 
 

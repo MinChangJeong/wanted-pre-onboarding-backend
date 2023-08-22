@@ -17,8 +17,7 @@ services:
       - app-tier
 
   backend:
-    build:
-      context: .
+    image: wjdalsckd45/wanted-docker
     restart: always
     depends_on:
       - mysqldb
